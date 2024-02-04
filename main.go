@@ -14,9 +14,17 @@ func main() {
 }
 
 func run() {
-	fmt.Print("Enter command and data: ")
+	fmt.Print("Enter a command and data:")
 	userInput := getInput()
 	command, data := parseInput(userInput)
+
+	switch command {
+	case "exit":
+		fmt.Print("[Info] Bye!\n")
+		os.Exit(0)
+	default:
+		fmt.Print(command, data)
+	}
 	fmt.Println(command, data)
 }
 
