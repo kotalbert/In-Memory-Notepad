@@ -1,6 +1,7 @@
 package notepad
 
 import (
+	"fmt"
 	"testing"
 )
 
@@ -27,9 +28,15 @@ func TestCreatedNoteShouldHaveValidData(t *testing.T) {
 	}
 }
 
-func TestListNotes(t *testing.T) {
+func TestNotepad_ToString(t *testing.T) {
 	notepad := NewNotepad()
 	notepad.createNote("test1")
 	notepad.createNote("test2")
+
+	expected := fmt.Sprintf("[Info] 0: test1\n[Info] 1: test2\n")
+
+	if notepad.ToString() != expected {
+		t.Error("Expected ToString to return a valid string")
+	}
 
 }
