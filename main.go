@@ -7,7 +7,6 @@ import (
 	"strings"
 )
 
-// todo: add tests
 func main() {
 	for {
 		run()

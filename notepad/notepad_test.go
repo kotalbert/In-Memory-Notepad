@@ -22,7 +22,7 @@ func TestCreateNote(t *testing.T) {
 func TestCreatedNoteShouldHaveValidData(t *testing.T) {
 	notepad := NewNotepad()
 	notepad.createNote("test")
-	if notepad.notes[0].text != "test" {
+	if notepad.notes[0].Text != "test" {
 		t.Error("Expected note to have valid data")
 	}
 }
