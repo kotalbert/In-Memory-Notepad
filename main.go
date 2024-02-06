@@ -17,7 +17,11 @@ func main() {
 
 		switch command {
 		case "create":
-			npd.CreateNote(data)
+			err := npd.CreateNote(data)
+			if err != nil {
+				fmt.Print("[Error] Notepad is full\n")
+				continue
+			}
 			fmt.Print("[OK] The note was successfully created\n")
 		case "list":
 			npd.ListNotes()

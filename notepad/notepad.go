@@ -1,9 +1,12 @@
 package notepad
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 )
+
+const maxNoteNumber = 5
 
 type Notepad struct {
 	notes []Note
@@ -13,8 +16,12 @@ func NewNotepad() *Notepad {
 	return &Notepad{}
 }
 
-func (n *Notepad) CreateNote(text string) {
+func (n *Notepad) CreateNote(text string) error {
+	if len(n.notes) > maxNoteNumber {
+		return errors.New("the notepad is full")
+	}
 	n.notes = append(n.notes, Note{Id: len(n.notes) + 1, Text: text})
+	return nil
 }
 
 // ToString returns a string representation of the notepad
