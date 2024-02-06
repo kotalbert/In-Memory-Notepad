@@ -1,6 +1,7 @@
 package notepad
 
 import (
+	"fmt"
 	"strings"
 )
 
@@ -12,8 +13,8 @@ func NewNotepad() *Notepad {
 	return &Notepad{}
 }
 
-func (n *Notepad) createNote(text string) {
-	n.notes = append(n.notes, Note{Id: len(n.notes), Text: text})
+func (n *Notepad) CreateNote(text string) {
+	n.notes = append(n.notes, Note{Id: len(n.notes) + 1, Text: text})
 }
 
 // ToString returns a string representation of the notepad
@@ -27,9 +28,13 @@ func (n *Notepad) ToString() string {
 		sb.WriteString("\n")
 	}
 	return sb.String()
-
 }
 
-func (n *Notepad) clearNotes() {
+// ListNotes prints all notes to the console
+func (n *Notepad) ListNotes() {
+	fmt.Print(n.ToString())
+}
+
+func (n *Notepad) ClearNotes() {
 	n.notes = []Note{}
 }

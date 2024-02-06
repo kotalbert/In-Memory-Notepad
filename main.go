@@ -3,39 +3,34 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"kotalbert/in-memory-notepad/notepad"
 	"os"
 	"strings"
 )
 
 func main() {
+	npd := notepad.NewNotepad()
 	for {
-		run()
+		fmt.Print("Enter a command and data:")
+		userInput := getInput()
+		command, data := parseInput(userInput)
+
+		switch command {
+		case "create":
+			npd.CreateNote(data)
+			fmt.Print("[OK] The note was successfully created\n")
+		case "list":
+			npd.ListNotes()
+		case "clear":
+			npd.ClearNotes()
+			fmt.Print("[OK] All notes were successfully deleted\n")
+		case "exit":
+			fmt.Print("[Info] Bye!\n")
+			os.Exit(0)
+		default:
+			fmt.Print(command, data)
+		}
 	}
-}
-
-func run() {
-	fmt.Print("Enter a command and data:")
-	userInput := getInput()
-	command, data := parseInput(userInput)
-
-	switch command {
-	case "create":
-		fmt.Print("Creating a new note with data: ", data)
-	case "list":
-		fmt.Print("Listing all notes")
-	case "clear":
-		fmt.Print("Clearing all notes")
-	case "exit":
-		exitProgram()
-	default:
-		fmt.Print(command, data)
-	}
-	fmt.Println(command, data)
-}
-
-func exitProgram() {
-	fmt.Print("[Info] Bye!\n")
-	os.Exit(0)
 }
 
 func parseInput(input string) (string, string) {
