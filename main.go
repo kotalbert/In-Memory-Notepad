@@ -7,15 +7,6 @@ import (
 	"strings"
 )
 
-type Notepad struct {
-	notes []string
-}
-
-type Note struct {
-	id   int
-	text string
-}
-
 // todo: add tests
 func main() {
 	for {
