@@ -7,6 +7,16 @@ import (
 	"strings"
 )
 
+type Notepad struct {
+	notes []string
+}
+
+type Note struct {
+	id   int
+	text string
+}
+
+// todo: add tests
 func main() {
 	for {
 		run()
@@ -19,13 +29,23 @@ func run() {
 	command, data := parseInput(userInput)
 
 	switch command {
+	case "create":
+		fmt.Print("Creating a new note with data: ", data)
+	case "list":
+		fmt.Print("Listing all notes")
+	case "clear":
+		fmt.Print("Clearing all notes")
 	case "exit":
-		fmt.Print("[Info] Bye!\n")
-		os.Exit(0)
+		exitProgram()
 	default:
 		fmt.Print(command, data)
 	}
 	fmt.Println(command, data)
+}
+
+func exitProgram() {
+	fmt.Print("[Info] Bye!\n")
+	os.Exit(0)
 }
 
 func parseInput(input string) (string, string) {
