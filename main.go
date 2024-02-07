@@ -5,11 +5,13 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
 )
 
 func main() {
 	npd := NewNotepad()
+
 	for {
 		fmt.Print("Enter a command and data: ")
 		userInput := getInput()
@@ -19,12 +21,15 @@ func main() {
 		case "create":
 			err := npd.CreateNote(data)
 			if err != nil {
-				fmt.Print("[Error] Notepad is full\n")
+				fmt.Print(err.Error())
 				continue
 			}
 			fmt.Print("[OK] The note was successfully created\n")
 		case "list":
-			npd.ListNotes()
+			err := npd.ListNotes()
+			if err != nil {
+				fmt.Println(err.Error())
+			}
 		case "clear":
 			npd.ClearNotes()
 			fmt.Print("[OK] All notes were successfully deleted\n")
@@ -58,19 +63,31 @@ func (n Note) ToString() string {
 	return fmt.Sprintf("[Info] %d: %s", n.Id, n.Text)
 }
 
-const maxNoteNumber = 5
-
 type Notepad struct {
-	notes []Note
+	notes   []Note
+	maxSize int
 }
 
+// NewNotepad creates a new notepad, after asking for maximum number of notes
+//
+//	Will return an error if the input is not a number
 func NewNotepad() *Notepad {
-	return &Notepad{}
+	fmt.Println("Enter the maximum number of notes:")
+	maxNoteNumber, err := strconv.Atoi(getInput())
+	if err != nil {
+		fmt.Println("[Error] Please enter a valid number")
+		os.Exit(1)
+	}
+
+	return &Notepad{maxSize: maxNoteNumber}
 }
 
 func (n *Notepad) CreateNote(text string) error {
-	if len(n.notes) >= maxNoteNumber {
-		return errors.New("the notepad is full")
+	if len(n.notes) >= n.maxSize {
+		return errors.New("[Error] Notepad is full\n")
+	}
+	if len(text) == 0 {
+		return errors.New("[Error] Missing note argument\n")
 	}
 	n.notes = append(n.notes, Note{Id: len(n.notes) + 1, Text: text})
 	return nil
@@ -90,8 +107,12 @@ func (n *Notepad) ToString() string {
 }
 
 // ListNotes prints all notes to the console
-func (n *Notepad) ListNotes() {
+func (n *Notepad) ListNotes() error {
+	if len(n.notes) == 0 {
+		return errors.New("[Info] Notepad is empty\n")
+	}
 	fmt.Print(n.ToString())
+	return nil
 }
 
 func (n *Notepad) ClearNotes() {
