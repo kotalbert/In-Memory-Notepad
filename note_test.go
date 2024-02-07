@@ -1,6 +1,8 @@
-package notepad
+package main
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestNote_ToString(t *testing.T) {
 	note := Note{Id: 1, Text: "test"}
