@@ -10,7 +10,14 @@ import (
 )
 
 func main() {
-	npd := NewNotepad()
+
+	fmt.Println("Enter the maximum number of notes:")
+	maxNoteNumber, err := strconv.Atoi(getInput())
+	if err != nil {
+		fmt.Println("[Error] Please enter a valid number")
+		os.Exit(1)
+	}
+	npd := NewNotepad(maxNoteNumber)
 
 	for {
 		fmt.Print("Enter a command and data: ")
@@ -69,16 +76,7 @@ type Notepad struct {
 }
 
 // NewNotepad creates a new notepad, after asking for maximum number of notes
-//
-//	Will return an error if the input is not a number
-func NewNotepad() *Notepad {
-	fmt.Println("Enter the maximum number of notes:")
-	maxNoteNumber, err := strconv.Atoi(getInput())
-	if err != nil {
-		fmt.Println("[Error] Please enter a valid number")
-		os.Exit(1)
-	}
-
+func NewNotepad(maxNoteNumber int) *Notepad {
 	return &Notepad{maxSize: maxNoteNumber}
 }
 
