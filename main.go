@@ -34,15 +34,44 @@ func main() {
 			fmt.Print("[OK] The note was successfully created\n")
 		case "update":
 			noteId, newText := parseInput(data)
+			if noteId == "" {
+				fmt.Print("[Error] Missing position argument\n")
+				continue
+			}
+			if newText == "" {
+				fmt.Print("[Error] Missing note argument\n")
+				continue
+			}
 			noteIdInt, err := strconv.Atoi(noteId)
 			if err != nil {
-				fmt.Println("[Error] Please enter a valid number")
+				fmt.Printf("[Error] Invalid position: %s\n", noteId)
 				continue
 			}
 			err = npd.UpdateNote(noteIdInt, newText)
 			if err != nil {
 				fmt.Println(err.Error())
+				continue
 			}
+			fmt.Printf("[OK] The note at position %d was successfully updated\n", noteIdInt)
+
+		case "delete":
+			noteId, _ := parseInput(data)
+			if noteId == "" {
+				fmt.Print("[Error] Missing position argument\n")
+				continue
+			}
+			noteIdInt, err := strconv.Atoi(noteId)
+			if err != nil {
+				fmt.Printf("[Error] Invalid position: %s\n", noteId)
+				continue
+			}
+			err = npd.DeleteNote(noteIdInt)
+			if err != nil {
+				fmt.Println(err.Error())
+				continue
+			}
+			fmt.Printf("[OK] The note at position %d was successfully deleted\n", noteIdInt)
+
 		case "list":
 			err := npd.ListNotes()
 			if err != nil {
@@ -101,6 +130,7 @@ func (n *Notepad) CreateNote(text string) error {
 		return errors.New("[Error] Missing note argument\n")
 	}
 	n.notes[n.nextNoteIndex] = &Note{Id: n.nextNoteIndex + 1, Text: text}
+	n.nextNoteIndex++
 	return nil
 }
 
@@ -122,7 +152,7 @@ func (n *Notepad) ToString() string {
 
 // ListNotes prints all notes to the console
 func (n *Notepad) ListNotes() error {
-	if len(n.notes) == 0 {
+	if n.nextNoteIndex == 0 {
 		return errors.New("[Info] Notepad is empty\n")
 	}
 	fmt.Print(n.ToString())
@@ -131,6 +161,7 @@ func (n *Notepad) ListNotes() error {
 
 func (n *Notepad) ClearNotes() {
 	n.notes = make([]*Note, 0, n.maxSize)
+	n.nextNoteIndex = 0
 }
 
 func (n *Notepad) UpdateNote(noteId int, newText string) error {
@@ -141,7 +172,21 @@ func (n *Notepad) UpdateNote(noteId int, newText string) error {
 	if n.notes[noteId-1] == nil {
 		return errors.New("[Error] There is nothing to update\n")
 	}
+	if len(newText) == 0 {
+		return errors.New("[Error] Missing note argument\n")
+	}
 	n.notes[noteId-1] = &Note{Id: noteId, Text: newText}
-	fmt.Printf("[OK] The note at position %d was successfully updated\n", noteId)
+	return nil
+}
+
+func (n *Notepad) DeleteNote(noteId int) error {
+	if noteId < 1 || noteId > n.maxSize {
+		msg := fmt.Sprintf("[Error] Position %d is out of the boundaries [1, %d]\n", noteId, n.maxSize)
+		return errors.New(msg)
+	}
+	if n.notes[noteId-1] == nil {
+		return errors.New("[Error] There is nothing to delete\n")
+	}
+	n.notes[noteId-1] = nil
 	return nil
 }
