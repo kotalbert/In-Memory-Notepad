@@ -111,26 +111,34 @@ func (n Note) ToString() string {
 }
 
 type Notepad struct {
-	notes         []*Note
-	maxSize       int
-	nextNoteIndex int
+	notes      []*Note
+	maxSize    int
+	noteNumber int
 }
 
 // NewNotepad creates a new notepad, after asking for maximum number of notes
 func NewNotepad(maxNoteNumber int) *Notepad {
-	notes := make([]*Note, maxNoteNumber)
+	notes := make([]*Note, 0, maxNoteNumber)
 	return &Notepad{maxSize: maxNoteNumber, notes: notes}
 }
 
+// CreateNote creates a new note with the given text
+//   - If the notepad is full, it returns an error
+//   - If the text is empty, it returns an error
+//   - Otherwise, it creates a new note and returns nil
+//
+// Keeps track of number of notes already created
 func (n *Notepad) CreateNote(text string) error {
-	if n.nextNoteIndex >= n.maxSize {
+	if n.noteNumber >= n.maxSize {
 		return errors.New("[Error] Notepad is full\n")
 	}
 	if len(text) == 0 {
 		return errors.New("[Error] Missing note argument\n")
 	}
-	n.notes[n.nextNoteIndex] = &Note{Id: n.nextNoteIndex + 1, Text: text}
-	n.nextNoteIndex++
+	//n.notes[n.nextNoteIndex] = &Note{Id: n.nextNoteIndex + 1, Text: text}
+	//n.nextNoteIndex++
+	n.notes = append(n.notes, &Note{Id: len(n.notes) + 1, Text: text})
+	n.noteNumber++
 	return nil
 }
 
@@ -152,7 +160,7 @@ func (n *Notepad) ToString() string {
 
 // ListNotes prints all notes to the console
 func (n *Notepad) ListNotes() error {
-	if n.nextNoteIndex == 0 {
+	if n.noteNumber == 0 {
 		return errors.New("[Info] Notepad is empty\n")
 	}
 	fmt.Print(n.ToString())
@@ -161,7 +169,7 @@ func (n *Notepad) ListNotes() error {
 
 func (n *Notepad) ClearNotes() {
 	n.notes = make([]*Note, 0, n.maxSize)
-	n.nextNoteIndex = 0
+	n.noteNumber = 0
 }
 
 func (n *Notepad) UpdateNote(noteId int, newText string) error {
@@ -169,7 +177,7 @@ func (n *Notepad) UpdateNote(noteId int, newText string) error {
 		msg := fmt.Sprintf("[Error] Position %d is out of the boundaries [1, %d]\n", noteId, n.maxSize)
 		return errors.New(msg)
 	}
-	if n.notes[noteId-1] == nil {
+	if len(n.notes) == 0 || n.notes[noteId-1] == nil {
 		return errors.New("[Error] There is nothing to update\n")
 	}
 	if len(newText) == 0 {
@@ -184,9 +192,15 @@ func (n *Notepad) DeleteNote(noteId int) error {
 		msg := fmt.Sprintf("[Error] Position %d is out of the boundaries [1, %d]\n", noteId, n.maxSize)
 		return errors.New(msg)
 	}
-	if n.notes[noteId-1] == nil {
+	if len(n.notes) == 0 || n.notes[noteId-1] == nil {
 		return errors.New("[Error] There is nothing to delete\n")
 	}
 	n.notes[noteId-1] = nil
+	n.notes = append(n.notes[:noteId-1], n.notes[noteId:]...)
+	n.noteNumber--
+	// update the note id's after the deleted note
+	for i := noteId - 1; i < len(n.notes); i++ {
+		n.notes[i].Id = i + 1
+	}
 	return nil
 }
